@@ -1,0 +1,493 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+ xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="
+ http://www.liquibase.org/xml/ns/dbchangelog
+ http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+<!-- ================= USERS ================= -->
+
+<changeSet id="1-create-users" author="rutu">
+    <createTable tableName="users">
+        <column name="id" type="INT" autoIncrement="true">
+            <constraints primaryKey="true"/>
+        </column>
+        <column name="userName" type="VARCHAR(255)">
+            <constraints unique="true" nullable="false"/>
+        </column>
+        <column name="firstName" type="VARCHAR(255)"/>
+        <column name="lastName" type="VARCHAR(255)"/>
+        <column name="email" type="VARCHAR(255)">
+            <constraints unique="true" nullable="false"/>
+        </column>
+        <column name="countryCode" type="VARCHAR(10)">
+            <constraints nullable="false"/>
+        </column>
+        <column name="phoneNumber" type="VARCHAR(20)">
+            <constraints unique="true" nullable="false"/>
+        </column>
+        <column name="hashedPassword" type="VARCHAR(255)">
+            <constraints nullable="false"/>
+        </column>
+        <column name="roleId" type="Int" />
+        <column name="isDeleted" type="BOOLEAN"/>
+        <column name="createdAt" type="TIMESTAMP"/>
+        <column name="updatedAt" type="TIMESTAMP"/>
+        <column name="deletedAt" type="TIMESTAMP"/>
+    </createTable>
+</changeSet>
+
+<!-- ================= ROLES ================= -->
+
+<changeSet id="2-create-roles" author="rutu">
+    <createTable tableName="roles">
+        <column name="id" type="INT" autoIncrement="true">
+            <constraints primaryKey="true"/>
+        </column>
+        <column name="name" type="VARCHAR(100)">
+            <constraints unique="true" nullable="false"/>
+        </column>
+        <column name="createdAt" type="TIMESTAMP"/>
+        <column name="updatedAt" type="TIMESTAMP"/>
+    </createTable>
+</changeSet>
+
+<!-- ================= ADDRESSES ================= -->
+
+<changeSet id="4-create-addresses" author="rutu">
+    <createTable tableName="addresses">
+        <column name="id" type="INT" autoIncrement="true">
+            <constraints primaryKey="true"/>
+        </column>
+        <column name="userId" type="INT"/>
+        <column name="addressLine_1" type="VARCHAR(255)"/>
+        <column name="city" type="VARCHAR(100)"/>     <!-- this is deleted in later changeSet but added here for initial creation -->
+        <column name="state" type="VARCHAR(100)"/>    <!-- this is deleted in later changeSet but added here for initial creation -->
+        <column name="country" type="VARCHAR(100)"/>   <!-- this is deleted in later changeSet but added here for initial creation -->
+        <column name="createdAt" type="TIMESTAMP"/> 
+        <column name="updatedAt" type="TIMESTAMP"/>
+    </createTable>
+</changeSet>
+
+<!-- ================= SELLERS ================= -->
+
+<changeSet id="5-create-sellers" author="rutu">
+    <createTable tableName="sellers">
+        <column name="id" type="INT" autoIncrement="true">
+            <constraints primaryKey="true"/>
+        </column>
+        <column name="userId" type="INT">
+            <constraints unique="true" nullable="false"/>
+        </column>
+        <column name="companyName" type="VARCHAR(255)"/>
+        <column name="rating" type="DECIMAL(3,2)"/>
+        <column name="createdAt" type="TIMESTAMP"/>
+        <column name="updatedAt" type="TIMESTAMP"/>
+    </createTable>
+</changeSet>
+
+<!-- ================= CATEGORIES ================= -->
+
+<changeSet id="6-create-categories" author="rutu">
+    <createTable tableName="categories">
+        <column name="id" type="INT" autoIncrement="true">
+            <constraints primaryKey="true"/>
+        </column>
+        <column name="name" type="VARCHAR(255)"/>
+        <column name="createdAt" type="TIMESTAMP"/>
+        <column name="updatedAt" type="TIMESTAMP"/>
+    </createTable>
+</changeSet>
+
+<!-- ================= PRODUCTS ================= -->
+
+<changeSet id="7-create-products" author="rutu">
+    <createTable tableName="products">
+        <column name="id" type="INT" autoIncrement="true">
+            <constraints primaryKey="true"/>
+        </column>
+        <column name="sellerId" type="INT"/>
+        <column name="categoryId" type="INT"/>
+        <column name="name" type="VARCHAR(255)">
+            <constraints nullable="false"/>
+        </column>
+        <column name="description" type="TEXT"/>
+        <column name="price" type="DECIMAL(10,2)">
+            <constraints nullable="false"/>
+        </column>
+        <column name="discountPercent" type="DECIMAL(5,2)" defaultValueNumeric="0"/>
+        <column name="averageRating" type="DECIMAL(3,2)"/>
+        <column name="isTrending" type="BOOLEAN" defaultValueBoolean="false"/>
+        <column name="stockQuantity" type="INT"/>
+        <column name="createdAt" type="TIMESTAMP"/>
+        <column name="updatedAt" type="TIMESTAMP"/>
+    </createTable>
+</changeSet>
+
+<!-- ================= CART ================= -->
+
+<changeSet id="8-create-carts" author="rutu">
+    <createTable tableName="carts">
+        <column name="id" type="INT" autoIncrement="true">
+            <constraints primaryKey="true"/>
+        </column>
+        <column name="userId" type="INT">
+            <constraints unique="true"/>
+        </column>
+        <column name="createdAt" type="TIMESTAMP"/>
+        <column name="updatedAt" type="TIMESTAMP"/>
+    </createTable>
+</changeSet>
+
+<!-- ================= CART ITEMS ================= -->
+
+<changeSet id="9-create-cart-items" author="rutu">
+    <createTable tableName="cart_items">
+        <column name="id" type="INT" autoIncrement="true">
+            <constraints primaryKey="true"/>
+        </column>
+        <column name="cartId" type="INT"/>
+        <column name="productId" type="INT"/>
+        <column name="quantity" type="INT"/>
+        <column name="createdAt" type="TIMESTAMP"/>
+        <column name="updatedAt" type="TIMESTAMP"/>
+    </createTable>
+</changeSet>
+
+<!-- ================= ORDERS ================= -->
+
+<changeSet id="10-create-orders" author="rutu">
+    <createTable tableName="orders">
+        <column name="id" type="INT" autoIncrement="true">
+            <constraints primaryKey="true"/>
+        </column>
+        <column name="userId" type="INT"/>
+        <column name="shippingAddressId" type="INT"/>
+        <column name="totalAmount" type="DECIMAL(10,2)"/>
+        <column name="orderStatus" type="VARCHAR(100)"/>
+        <column name="orderDate" type="TIMESTAMP"/>
+        <column name="createdAt" type="TIMESTAMP"/>
+        <column name="updatedAt" type="TIMESTAMP"/>
+        <column name="isDelete" type="BOOLEAN"/>
+    </createTable>
+</changeSet>
+
+<!-- ================= ORDER ITEMS ================= -->
+
+<changeSet id="11-create-order-items" author="rutu">
+    <createTable tableName="order_items">
+        <column name="id" type="INT" autoIncrement="true">
+            <constraints primaryKey="true"/>
+        </column>
+        <column name="orderId" type="INT"/>
+        <column name="productId" type="INT"/>
+        <column name="sellerId" type="INT"/>
+        <column name="quantity" type="INT"/>
+        <column name="priceAtPurchase" type="DECIMAL(10,2)"/>
+        <column name="createdAt" type="TIMESTAMP"/>
+        <column name="updatedAt" type="TIMESTAMP"/>
+    </createTable>
+</changeSet>
+
+<!-- ================= REVIEWS ================= -->
+
+<changeSet id="12-create-reviews" author="rutu">
+    <createTable tableName="reviews">
+        <column name="id" type="INT" autoIncrement="true">
+            <constraints primaryKey="true"/>
+        </column>
+        <column name="productId" type="INT"/>
+        <column name="userId" type="INT"/>
+        <column name="rating" type="INT"/>
+        <column name="createdAt" type="TIMESTAMP"/>
+        <column name="updatedAt" type="TIMESTAMP"/>
+    </createTable>
+</changeSet>
+
+<!-- ================= FOREIGN KEYS ================= -->
+
+<changeSet id="13-add-foreign-keys" author="rutu">
+
+    <addForeignKeyConstraint baseTableName="users"
+        baseColumnNames="roleId"
+        referencedTableName="roles"
+        referencedColumnNames="id"
+        constraintName="fk_userrole_user"/>
+
+    <addForeignKeyConstraint baseTableName="addresses"
+        baseColumnNames="userId"
+        referencedTableName="users"
+        referencedColumnNames="id"
+        constraintName="fk_address_user"/>
+
+    <addForeignKeyConstraint baseTableName="sellers"
+        baseColumnNames="userId"
+        referencedTableName="users"
+        referencedColumnNames="id"
+        constraintName="fk_seller_user"/>
+
+    <addForeignKeyConstraint baseTableName="products"
+        baseColumnNames="sellerId"
+        referencedTableName="sellers"
+        referencedColumnNames="id"
+        constraintName="fk_product_seller"/>
+
+    <addForeignKeyConstraint baseTableName="products"
+        baseColumnNames="categoryId"
+        referencedTableName="categories"
+        referencedColumnNames="id"
+        constraintName="fk_product_category"/>
+
+    <addForeignKeyConstraint baseTableName="cart_items"
+        baseColumnNames="cartId"
+        referencedTableName="carts"
+        referencedColumnNames="id"
+        constraintName="fk_cartitem_cart"/>
+
+    <addForeignKeyConstraint baseTableName="cart_items"
+        baseColumnNames="productId"
+        referencedTableName="products"
+        referencedColumnNames="id"
+        constraintName="fk_cartitem_product"/>
+
+    <addForeignKeyConstraint baseTableName="orders"
+        baseColumnNames="userId"
+        referencedTableName="users"
+        referencedColumnNames="id"
+        constraintName="fk_order_user"/>
+
+    <addForeignKeyConstraint baseTableName="orders"
+        baseColumnNames="shippingAddressId"
+        referencedTableName="addresses"
+        referencedColumnNames="id"
+        constraintName="fk_order_address"/>
+
+    <addForeignKeyConstraint baseTableName="order_items"
+        baseColumnNames="orderId"
+        referencedTableName="orders"
+        referencedColumnNames="id"
+        constraintName="fk_orderitem_order"/>
+
+    <addForeignKeyConstraint baseTableName="order_items"
+        baseColumnNames="productId"
+        referencedTableName="products"
+        referencedColumnNames="id"
+        constraintName="fk_orderitem_product"/>
+
+    <addForeignKeyConstraint baseTableName="order_items"
+        baseColumnNames="sellerId"
+        referencedTableName="sellers"
+        referencedColumnNames="id"
+        constraintName="fk_orderitem_seller"/>
+
+    <addForeignKeyConstraint baseTableName="reviews"
+        baseColumnNames="productId"
+        referencedTableName="products"
+        referencedColumnNames="id"
+        constraintName="fk_review_product"/>
+
+    <addForeignKeyConstraint baseTableName="reviews"
+        baseColumnNames="userId"
+        referencedTableName="users"
+        referencedColumnNames="id"
+        constraintName="fk_review_user"/>
+
+</changeSet>
+
+<changeSet id="add-otp-columns-to-users" author="rutu">
+    <addColumn tableName="users">
+        <column name="otp" type="VARCHAR(6)"/>
+        <column name="otpExp" type="TIMESTAMP"/>
+    </addColumn>
+</changeSet>
+
+<changeSet id="drop-countrycode-and-firstName-and lastName-columns-from-users" author="rutu">
+    <dropColumn tableName="users" columnName="countryCode"/>
+    <dropColumn tableName="users" columnName="firstName"/>
+    <dropColumn tableName="users" columnName="lastName"/>
+</changeSet>
+
+<changeSet id="drop foreign key constraints of sellers table" author="rutu">
+    <dropForeignKeyConstraint baseTableName="sellers" constraintName="fk_seller_user"/>
+    <dropForeignKeyConstraint baseTableName="products" constraintName="fk_product_seller"/>
+    <dropForeignKeyConstraint baseTableName="order_items" constraintName="fk_orderitem_seller"/>
+</changeSet>
+   
+<changeSet id="drop seller table" author="rutu">
+    <dropTable tableName="sellers"/>
+</changeSet>
+
+<changeSet id="drop sellerId column from products and order_items tables" author="rutu">
+    <dropColumn tableName="products" columnName="sellerId"/>
+    <dropColumn tableName="order_items" columnName="sellerId"/>
+</changeSet>
+
+<!-- ================= PRODUCTS ================= -->
+
+<changeSet id="add-display-columns-to-products" author="rutu">
+    <addColumn tableName="products">
+        <column name="imageUrl" type="VARCHAR(500)"/>
+        <column name="size" type="VARCHAR(50)"/>
+    </addColumn>
+</changeSet>
+
+<changeSet id="create-flat-product-sizes-table-v2" author="rutu">
+    <createTable tableName="product_sizes">
+        <column name="id" type="INT" autoIncrement="true">
+            <constraints primaryKey="true"/>
+        </column>
+        <column name="productId" type="INT">
+            <constraints unique="true" nullable="false"/>
+        </column>
+        
+        <column name="small_size_name" type="VARCHAR(50)" defaultValue="Small"/>
+        <column name="small_size_stock" type="INT" defaultValueNumeric="0"/>
+        
+        <column name="medium_size_name" type="VARCHAR(50)" defaultValue="Medium"/>
+        <column name="medium_size_stock" type="INT" defaultValueNumeric="0"/>
+        
+        <column name="large_size_name" type="VARCHAR(50)" defaultValue="Large"/>
+        <column name="large_size_stock" type="INT" defaultValueNumeric="0"/>
+
+        <column name="createdAt" type="TIMESTAMP" defaultValueComputed="current_timestamp"/>
+        <column name="updatedAt" type="TIMESTAMP" defaultValueComputed="current_timestamp"/>
+    </createTable>
+</changeSet>
+
+
+<changeSet id="add-fk-to-flat-sizes-v2" author="rutu">
+    <addForeignKeyConstraint baseTableName="product_sizes"
+        baseColumnNames="productId"
+        referencedTableName="products"
+        referencedColumnNames="id"
+        constraintName="fk_flat_size_product_new"/>
+</changeSet>
+
+<changeSet id="drop stockQuantity column from products table" author="rutu">
+    <dropColumn tableName="products" columnName="stockQuantity"/>
+</changeSet>
+
+<changeSet id="drop size column from products table" author="rutu">
+    <dropColumn tableName="products" columnName="size"/>
+</changeSet>
+
+<changeSet id="drop city and state columns from addresses table" author="rutu">
+    <dropColumn tableName="addresses" columnName="city"/>
+    <dropColumn tableName="addresses" columnName="state"/>
+</changeSet>
+
+<changeSet id="drop country column from addresses table" author="rutu">
+    <dropColumn tableName="addresses" columnName="country"/>
+</changeSet>
+
+<changeSet id="drop foreign key contraint of cart table and then drop cart table" author="rutu">
+    <dropForeignKeyConstraint baseTableName="cart_items" constraintName="fk_cartitem_cart"/>
+    <dropTable tableName="carts"/>
+</changeSet>
+
+<changeSet id= "drop column cartid from cart_items table" author="rutu">
+    <dropColumn tableName="cart_items" columnName="cartId"/>
+</changeSet>
+
+<changeSet id = "add userId column to cart_items table" author="rutu">
+    <addColumn tableName="cart_items">
+        <column name="userId" type="INT"/>
+    </addColumn>
+</changeSet>    
+
+<changeSet id="add fk constraint to cart_items table for userId column" author="rutu">
+    <addForeignKeyConstraint baseTableName="cart_items"
+        baseColumnNames="userId"
+        referencedTableName="users"
+        referencedColumnNames="id"
+        constraintName="fk_cartitem_user"/>
+</changeSet>
+
+<changeSet id="add size column to cart_items table" author="rutu">
+    <addColumn tableName="cart_items">
+        <column name="size" type="VARCHAR(50)"/>
+    </addColumn>
+</changeSet>
+
+<changeSet id="add credit_card_number, card_expiry and card_cvv columns to user table" author="rutu">
+    <addColumn tableName="users">
+        <column name="credit_card_number" type="VARCHAR(20)"/>
+        <column name="card_expiry" type="VARCHAR(10)"/>
+        <column name="card_cvv" type="VARCHAR(5)"/>
+    </addColumn>
+</changeSet>
+
+<changeSet id="add-totalAmount-to-order-items" author="rutu">
+    <addColumn tableName="order_items">
+        <column name="totalAmount" type="FLOAT" defaultValueNumeric="0"/>
+    </addColumn>
+</changeSet>
+
+<changeSet id="update-image-url-type" author="rutu">
+    <modifyDataType tableName="products" 
+                    columnName="imageUrl" 
+                    newDataType="LONGTEXT"/>
+</changeSet>
+
+<changeSet id="add address column in users table" author="rutu">
+    <addColumn tableName="users">
+        <column name="address" type="TEXT" />
+    </addColumn>
+</changeSet>
+
+<changeSet id="drop-fk-order-address" author="rutu">
+    <dropForeignKeyConstraint 
+        baseTableName="orders" 
+        constraintName="fk_order_address"/>
+</changeSet>
+
+<changeSet id="drop-index-order-address" author="rutu">
+    <dropIndex 
+        tableName="orders" 
+        indexName="fk_order_address"/>
+</changeSet>
+
+<changeSet id="update shipping address in order table" author="rutu">
+    <modifyDataType tableName="orders" 
+                    columnName="shippingAddressId" 
+                    newDataType="TEXT"/>
+</changeSet>
+
+<changeSet id="add-size-stock-columns" author="rutu">
+    <addColumn tableName="products">
+        <column name="small_size_stock" type="INT" defaultValueNumeric="0"/>
+        <column name="medium_size_stock" type="INT" defaultValueNumeric="0"/>
+        <column name="large_size_stock" type="INT" defaultValueNumeric="0"/>
+        <column name="extra_large_size_stock" type="INT" defaultValueNumeric="0"/>
+    </addColumn>
+</changeSet>
+
+<changeSet id="13-upgrade-to-rich-reviews" author="rutu">
+    <addColumn tableName="reviews">
+        <column name="comment" type="VARCHAR(500)">
+            <constraints nullable="true"/>
+        </column>
+    </addColumn>
+
+    <modifyDataType tableName="reviews" 
+                    columnName="rating" 
+                    newDataType="FLOAT"/>
+
+    <addUniqueConstraint tableName="reviews" 
+                         columnNames="productId, userId" 
+                         constraintName="uq_user_product_review"/>
+</changeSet>
+
+<changeSet id="15-cascade-delete-setup" author="rutu">
+    <dropForeignKeyConstraint baseTableName="products" constraintName="fk_product_category"/>
+    <addForeignKeyConstraint baseTableName="products"
+                             baseColumnNames="categoryId"
+                             referencedTableName="categories"
+                             referencedColumnNames="id"
+                             onDelete="CASCADE" 
+                             constraintName="fk_product_category_cascade"/>
+</changeSet>
+
+</databaseChangeLog>
