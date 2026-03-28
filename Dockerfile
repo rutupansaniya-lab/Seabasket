@@ -2,15 +2,14 @@ FROM python:3.9
 
 WORKDIR /code
 
-RUN pip install "poetry ==1.3.1"
+# Copy the requirements file first to leverage Docker cache
+COPY requirements.txt .
 
-COPY pyproject.toml pyproject.toml
+# Install dependencies using pip
+RUN pip install --no-cache-dir -r requirements.txt
 
-COPY poetry.lock poetry.lock
-
-RUN poetry config virtualenvs.create false \
-    && poetry install --no-interaction --no-ansi
-
+# Copy the rest of your application code
 COPY . .
 
+# Run the application
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
